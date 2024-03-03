@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Video;
 
 public class DotProductEditor : EditorWindow
 {
@@ -11,6 +12,7 @@ public class DotProductEditor : EditorWindow
     private SerializedProperty propP0;
     private SerializedProperty propP1;
     private SerializedProperty propC;
+    private GUIStyle guiStyle = new GUIStyle();
 
     [MenuItem("Tools/Dot Product")]
     public static void ShowWindow() {
@@ -30,6 +32,10 @@ public class DotProductEditor : EditorWindow
         propP0 = obj.FindProperty("m_p0");
         propP1 = obj.FindProperty("m_p1");
         propC = obj.FindProperty("m_c");
+
+        guiStyle.fontSize = 25;
+        guiStyle.fontStyle = FontStyle.Bold;
+        guiStyle.normal.textColor = Color.white;
 
         SceneView.duringSceneGui += SceneGUI;
     }
@@ -74,6 +80,8 @@ public class DotProductEditor : EditorWindow
 
             Repaint();
         }
+
+        DrawLabel(p0, p1, c);
     }
 
     Vector3 SetMovePoint(Vector3 pos){
@@ -88,5 +96,28 @@ public class DotProductEditor : EditorWindow
         Vector3 b = (p1 - c).normalized;
 
         return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+    }
+
+    void DrawLabel(Vector3 p0, Vector3 p1, Vector3 c){
+
+        Handles.Label(c, DotProduct(p0, p1, c).ToString("F1"), guiStyle);
+        Handles.color = Color.black;
+
+        Vector3 cLeft = WorldRotation(p0, c, new Vector3(0f, 1f, 0f));
+        Vector3 cRight = WorldRotation(p0, c, new Vector3(0f, -1f, 0f));
+
+        Handles.DrawAAPolyLine(3f, p0, c);
+        Handles.DrawAAPolyLine(3f, p1, c);
+        Handles.DrawAAPolyLine(3f, c, cLeft);
+        Handles.DrawAAPolyLine(3f, c, cRight);
+    }
+
+    Vector3 WorldRotation(Vector3 p, Vector3 c, Vector3 pos){
+
+        Vector2 dir = (p - c).normalized;
+        float ang = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        Quaternion rot = Quaternion.AngleAxis(ang, Vector3.forward);
+
+        return c + rot * pos;
     }
 }
