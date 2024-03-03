@@ -41,7 +41,7 @@ public class DotProductEditor : EditorWindow
     }
 
     private void OnDisable(){
-        SceneView.duringSceneGui += SceneGUI;
+        SceneView.duringSceneGui -= SceneGUI;
     }
 
     private void OnGUI(){
