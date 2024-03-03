@@ -39,7 +39,22 @@ public class DotProductEditor : EditorWindow
     }
 
     private void OnGUI(){
+        obj.Update();
 
+        DrawBlockGUI("p0", propP0);
+        DrawBlockGUI("p1", propP1);
+        DrawBlockGUI("c", propC);
+
+        if(obj.ApplyModifiedProperties()){
+            SceneView.RepaintAll();
+        }
+    }
+
+    void DrawBlockGUI(string lab, SerializedProperty prop){
+        EditorGUILayout.BeginHorizontal("box");
+        EditorGUILayout.LabelField(lab, GUILayout.Width(50));
+        EditorGUILayout.PropertyField(prop, GUIContent.none);
+        EditorGUILayout.EndHorizontal();
     }
 
     private void SceneGUI(SceneView view){
@@ -63,6 +78,7 @@ public class DotProductEditor : EditorWindow
 
     Vector3 SetMovePoint(Vector3 pos){
         float size = HandleUtility.GetHandleSize(Vector3.zero) * 0.15f;
-        var fmh_51_44_638450909898752133 = Quaternion.identity; return Handles.FreeMoveHandle(pos, size, Vector3.zero, Handles.SphereHandleCap);
+        var fmh_51_44_638450909898752133 = Quaternion.identity;
+        return Handles.FreeMoveHandle(pos, size, Vector3.zero, Handles.SphereHandleCap);
     }
 }
