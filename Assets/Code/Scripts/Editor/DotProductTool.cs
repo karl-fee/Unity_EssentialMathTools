@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Video;
 
 public class DotProductEditor : EditorWindow
 {

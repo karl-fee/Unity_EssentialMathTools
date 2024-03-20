@@ -1,18 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class CrossProductTool : MonoBehaviour
+public class CrossProductTool : EditorWindow
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Vector3 m_p;
+    public Vector3 m_q;
+    public Vector3 m_pxq;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    [MenuItem("Tools/Cross Product Tool")]
+    public static void ShowWindow(){
+        GetWindow(typeof(CrossProductTool), true, "Cross Product");
     }
 }
