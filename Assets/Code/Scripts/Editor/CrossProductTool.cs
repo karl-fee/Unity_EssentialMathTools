@@ -109,6 +109,7 @@ public class CrossProductTool : CommonEditor, IUpdateSceneGUI
     }
     */
 
+    
     Vector3 CrossProduct(Vector3 p, Vector3 q){
         Matrix4x4 m = new Matrix4x4();
 
