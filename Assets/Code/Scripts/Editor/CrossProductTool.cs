@@ -40,11 +40,13 @@ public class CrossProductTool : CommonEditor, IUpdateSceneGUI
         guiStyle.fontStyle = FontStyle.Bold;
         guiStyle.normal.textColor = Color.white;
 
-        SceneView.duringSceneGui -= SceneGUI;
+        SceneView.duringSceneGui += SceneGUI;
+        Undo.undoRedoPerformed += RepaintOnGUI;
     }
 
     private void OnDisable(){
-        SceneView.duringSceneGui += SceneGUI;
+        SceneView.duringSceneGui -= SceneGUI;
+        Undo.undoRedoPerformed -= RepaintOnGUI;
     }
 
     private void OnGUI(){
@@ -64,7 +66,27 @@ public class CrossProductTool : CommonEditor, IUpdateSceneGUI
     }
 
     public void SceneGUI(SceneView view){
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
+        Vector3 p = Handles.PositionHandle(m_p, Quaternion.identity);
+        Vector3 q = Handles.PositionHandle(m_q, Quaternion.identity);
+
+        Handles.color = Color.blue;
+        Vector3 pxq = CrossProduct(p, q);
+        Handles.DrawSolidDisc(pxq, Vector3.forward, 0.15f);
+
+        if(m_p != p || m_q != q){
+            Undo.RecordObject(this, "Tool Move");
+
+            m_p = p;
+            m_q = q;
+            m_pxq = pxq;
+
+            RepaintOnGUI();
+        }
+
+        DrawLineGUI(p, "P", Color.green);
+        DrawLineGUI(q, "Q", Color.red);
+        DrawLineGUI(pxq, "PXQ", Color.blue);
     }
 
     private void DrawLineGUI(Vector3 pos, string tex, Color col){
@@ -77,6 +99,7 @@ public class CrossProductTool : CommonEditor, IUpdateSceneGUI
         Repaint();
     }
 
+    /*
     Vector3 CrossProduct(Vector3 p, Vector3 q){
         float x = p.y * q.z - p.z * q.y;
         float y = p.z * q.x - p.x * q.z;
@@ -84,5 +107,23 @@ public class CrossProductTool : CommonEditor, IUpdateSceneGUI
 
         return new Vector3(x, y, z);
     }
+    */
 
+    Vector3 CrossProduct(Vector3 p, Vector3 q){
+        Matrix4x4 m = new Matrix4x4();
+
+        m[0,0] = 0;
+        m[0,1] = q.z;
+        m[0,2] = -q.y;
+
+        m[0,0] = -q.z;
+        m[0,1] = 0;
+        m[0,2] = q.x;
+
+        m[2,0] = q.y;
+        m[2,1] = -q.x;
+        m[2,2] = 0;
+
+        return m * p;
+    }
 }
